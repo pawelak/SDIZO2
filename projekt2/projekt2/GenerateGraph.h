@@ -14,6 +14,7 @@ public:
 	//vector <vector <int>> wynik (int, vector<int>(int));
 	int **wynik;
 	int **matrix;
+	int **matrix2;
 
 
 	GenerateGraph();
@@ -24,6 +25,8 @@ public:
 	void printMatixS();
 	void printMatrixI();
 	void printMatrixS();
+	void makeMatrixW();
+	void prim();
 	~GenerateGraph();
 };
 

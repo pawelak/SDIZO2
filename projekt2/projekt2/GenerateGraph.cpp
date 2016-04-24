@@ -1,7 +1,9 @@
-#include "stdafx.h"
+#include <iostream>
+#include <vector>
+#include <fstream>
 #include "GenerateGraph.h"
 
-
+using namespace std;
 
 
 GenerateGraph::GenerateGraph(int nodes, float density)
@@ -185,6 +187,99 @@ void GenerateGraph::printMatrixS()
 			cout << matrix[i][j] << " ";
 		}
 		cout << endl;
+	}
+}
+
+void GenerateGraph::makeMatrixW(){
+
+	matrix2 = new int *[nodes];
+
+	for (int i = 0; i < nodes; i++) {
+		matrix2[i] = new int[nodes];
+	}
+
+	for (int i = 0; i < nodes; i++) {
+		for (int j = 0; j < nodes; j++) {
+			matrix2[i][j] = 0;
+		}
+	}
+	for (int i = 0; i < ileK; i++) {
+		int pocz = wynik[i][0];
+		int kon = wynik[i][1];
+		matrix2[pocz][kon] = wynik[i][2];
+		matrix2[kon][pocz] = wynik[i][2];
+	}
+
+
+	for (int i = 0; i < nodes; i++) {
+		for (int j = 0; j < nodes; j++) {
+			cout << matrix2[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+void GenerateGraph::prim() {
+	int aktualnyWierzcholek = wynik[0][0];
+	int polaczenieZNajmniejszaWaga = 11;
+	vector <int> wierzcholkiDoDrzewa;
+	//int *wierzcholkiDoDrzewa;
+	//wierzcholkiDoDrzewa = new int[nodes-1];
+	int jebanyHelp;
+	//for (int i = 0; i < nodes - 1; i++) wierzcholkiDoDrzewa[i] = -1;
+	wierzcholkiDoDrzewa.push_back(aktualnyWierzcholek);
+	int id;
+
+
+	bool *odwiedzone;
+	odwiedzone = new bool[nodes];
+	//vector <bool> odwiedzone;
+	for (int i = 0; i < nodes; i++) {
+	//	odwiedzone.push_back(false);
+		odwiedzone[i] = false;
+	}
+
+	
+	odwiedzone[aktualnyWierzcholek] = true;
+
+	int jaPierdole;
+	cout << "nodsy" << nodes  << " " << ileK << endl;
+	for (int i = 0; i < nodes - 1; i++) {
+		aktualnyWierzcholek = wierzcholkiDoDrzewa[0];
+		polaczenieZNajmniejszaWaga = 11;
+		for(int v = 0; v < wierzcholkiDoDrzewa.size() ; v++){
+			cout << "v:" << v << endl;
+			aktualnyWierzcholek = wierzcholkiDoDrzewa[v];
+			for (int j = 0; j < ileK; j++) {
+				if (((wynik[j][0] == aktualnyWierzcholek && odwiedzone[wynik[j][1]]==false) || (wynik[j][1] == aktualnyWierzcholek && odwiedzone[wynik[j][0]]==false))) {
+					if (wynik[j][2] < polaczenieZNajmniejszaWaga) {
+						id = j;
+						polaczenieZNajmniejszaWaga = wynik[j][2];
+						jaPierdole = aktualnyWierzcholek;
+					}
+				}
+			}
+			
+		
+		}
+		if (wynik[id][0] == jaPierdole)
+			jebanyHelp = wynik[id][1];
+		else if (wynik[id][1] == jaPierdole)
+			jebanyHelp = wynik[id][0];
+		//cout << "odwiedzone " << endl;
+		//for (int x = 0; x < nodes; x++) {
+		//	cout << odwiedzone[x] << " ";
+		//}
+
+
+		wierzcholkiDoDrzewa.push_back(jebanyHelp);
+		odwiedzone[jebanyHelp] = true;
+		//aktualnyWierzcholek = wierzcholkiDoDrzewa[wierzcholkiDoDrzewa.size() - 1];
+		cout << jebanyHelp << endl;
+	}
+	cout << "dupa" << endl;
+	for (int i = 0; i < wierzcholkiDoDrzewa.size(); i++) { 
+		cout << wierzcholkiDoDrzewa[i] << endl;
 	}
 }
 
