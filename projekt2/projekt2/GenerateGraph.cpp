@@ -2,18 +2,29 @@
 #include "GenerateGraph.h"
 
 
+
+
 GenerateGraph::GenerateGraph(int nodes, float density)
 {
+	this->nodes = nodes;
+	zakresWagi = 9;
 	int minK = nodes - 1;			//¿eby by³ graf musi mieæ minium tyle to jest w zasadzie drzewo w tedy
-	double maxK = ((nodes - 1)*nodes) / 2;	//to jest maksymalna liczna krawêdzi dla grafu
+	maxK = ((nodes - 1)*nodes) / 2;	//to jest maksymalna liczna krawêdzi dla grafu
 	int ileMinGestosc = ceil((minK / maxK) * 100);
+	ileK = ceil(maxK*(density / 100));		//tyle chcemy krawêdzi
+	int waga;
+	wynik = new int *[ileK];
+	//vector <int, int> wynik;
+	//vector <vector <int>> wynik(ileK,vector<int>(3));
+	//wynik(ileK, vector<int>(3));
+	//matrix = <vector<vector<int>>(CAPACITY, <vector<int>
+
 
 	if (density > ileMinGestosc && density<100 )
 	{	
-		int ileK = ceil(maxK*(density/100));		//tyle chcemy krawêdzi
 		//cout << minK << " " << maxK << " " << ileMinGestosc << " " << ileK <<  endl;
 		vector <int> tab;
-		int **wynik = new int *[ileK];
+		
 		for (int i = 0; i < nodes; i++)
 		{
 			tab.push_back(i);
@@ -31,9 +42,11 @@ GenerateGraph::GenerateGraph(int nodes, float density)
 				if (tab[nastepny] >= 0)break;
 				
 			}
-			wynik[i-1] = new int[2];
+			wynik[i-1] = new int[3];
 			wynik[i-1][0] = poprzedni;
 			wynik[i-1][1] = nastepny;
+			waga = (rand() % zakresWagi) + 1;
+			wynik[i - 1][2] = waga;
 			//cout << wynik[i-1][0] << " " << wynik[i-1][1] << endl;
 			tab[nastepny] = -1;
 			poprzedni = nastepny;
@@ -56,9 +69,11 @@ GenerateGraph::GenerateGraph(int nodes, float density)
 				}
 				if (czyJest==false)
 				{
-					wynik[i] = new int[2];
+					wynik[i] = new int[3];
 					wynik[i][0] = poprzedni;
 					wynik[i][1] = nastepny;
+					waga = rand() % zakresWagi + 1;
+					wynik[i][2] = waga;
 					//cout << wynik[i][0] << " " << wynik[i][1] << endl;
 					break;
 				}
@@ -68,7 +83,7 @@ GenerateGraph::GenerateGraph(int nodes, float density)
 
 		for (int i = 0; i < ileK; i++)
 		{
-			cout << wynik[i][0] << " " << wynik[i][1] << endl;
+			cout << wynik[i][0] << " " << wynik[i][1] << " " << wynik[i][2] <<  endl;
 		}
 
 	}
@@ -77,10 +92,101 @@ GenerateGraph::GenerateGraph(int nodes, float density)
 		cout << "blendna gestosc " << endl;
 	}
 
-	
-	
+	fstream plik("plik.txt", ios::out);
+	if (plik.good())
+	{
+		plik << nodes << " " << ileK << "\n";
+		for (int i = 0; i < ileK; i++)
+		{
+			plik << wynik[i][0] << " " << wynik[i][1] <<" " << wynik[i][2] << "\n";
+		}
+		plik.close();
+	}	
 }
 
+
+void GenerateGraph::makeMatrixIncycencji()
+{
+
+	this->matrix = new int *[nodes];
+	cout << " tak bartoszu:" << endl;
+
+	for (int i = 0; i < nodes; i++)
+	{
+		matrix[i] = new int[ileK];
+	}
+
+	for (int i = 0; i < nodes; i++)
+	{
+		for (int j = 0; j < ileK; j++)
+		{
+			matrix[i][j] = 0;
+		}
+	}
+	for (int i = 0; i < ileK; i++)
+	{
+		int pocz = wynik[i][0];
+		int kon = wynik[i][1];
+		matrix[pocz][i] = 1;
+		matrix[kon][i] = 1;
+
+		/*int x = wynik[i][0];
+		int y = wynik[i][1];
+		this->matrix[x][y] = 1;*/
+	}
+}
+
+void GenerateGraph::makeMatrixS()
+{
+
+	this->matrix = new int *[nodes];
+
+	for (int i = 0; i < nodes; i++)
+	{
+		matrix[i] = new int[nodes];
+	}
+
+	for (int i = 0; i < nodes; i++)
+	{
+		for (int j = 0; j < nodes; j++)
+		{
+			matrix[i][j] = 0;
+		}
+	}
+	for (int i = 0; i < ileK; i++)
+	{
+		int pocz = wynik[i][0];
+		int kon = wynik[i][1];
+		matrix[pocz][kon] = 1;
+	}
+}
+
+
+
+void GenerateGraph::printMatrixI()
+{
+	for (int i = 0; i < nodes; i++)
+	{
+		for (int j = 0; j < ileK; j++)
+		{
+			cout << matrix[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+
+void GenerateGraph::printMatrixS()
+{
+	for (int i = 0; i < nodes; i++)
+	{
+		for (int j = 0; j < nodes; j++)
+		{
+			cout << matrix[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
 
 GenerateGraph::~GenerateGraph()
 {
